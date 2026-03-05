@@ -1,0 +1,10 @@
+{
+    "name": "Mel the Xplorer",
+    "speed": 50,
+    "sprite": {
+        "standing": [
+            "assets/sprites/knight/Idle_1.png"
+        ],
+        "walking": []
+    }
+}

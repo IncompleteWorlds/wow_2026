@@ -1,0 +1,111 @@
+from dataclasses import dataclass, field
+import json
+from typing import Any, Optional
+
+import pygame
+
+from actor import Actor
+from room import Room
+
+GAME_DATA_FILE = "assets/game_data.json"
+
+
+@dataclass
+class GameData:
+    """Container for input-related global state.
+
+    This replaces the previous module-level globals and can be
+    instantiated and passed around as needed.
+    """
+
+    # Game state flags
+    end_flag: bool = False
+
+    # Keyboard state
+    keys: Optional[pygame.key.ScancodeWrapper] = None
+
+    # Mouse state
+    mouse_x: int = 0
+    mouse_y: int = 0
+    mouse_click_x: Optional[int] = None
+    mouse_click_y: Optional[int] = None
+    mouse_pointer: Optional[pygame.Surface] = None  
+
+    grid_visible = False
+    debug_mode = False
+
+    map_file_name: str = ""
+
+    # list of rooms
+    list_rooms: dict[str, Room] = field(default_factory=dict)
+
+    current_room_name: str = ""
+    current_room : Optional[Room] = None
+
+    # list of actors
+    list_actors: dict[str, Actor] = field(default_factory=dict)
+
+    current_actor_name: str = ""
+    current_actor : Optional[Actor] = None
+    initial_actor_x = 0
+    initial_actor_y = 0
+    
+    # list of objects
+
+
+    def load_assets(self) -> None:
+        """Load all game assets (images, sounds, etc.)"""
+
+        # global game_data
+        try:
+            with open(GAME_DATA_FILE, "r") as f:
+                data = json.load(f)
+
+            if "mouse_pointer" in data:
+                mouse_pointer_path = data["mouse_pointer"]  
+                self.mouse_pointer = pygame.image.load(mouse_pointer_path)
+
+                # Optimize mouse pointer for faster blitting
+                self.mouse_pointer.convert()
+
+            # Load the list of actors 
+            if "actors" in data:
+                actors_data = data["actors"]
+                for current_actor_name in actors_data:
+                    # Process actor data
+                    new_actor = Actor(actor_name=current_actor_name,
+                        x=0, y=0)          
+
+                    self.list_actors[current_actor_name] = new_actor
+
+            # Load rooms
+            if "rooms" in data:
+                rooms_data = data["rooms"]
+                for current_room_name in rooms_data:
+                    new_room = Room(
+                        name=current_room_name,
+                        description=""
+                    )
+
+                    self.list_rooms[current_room_name] = new_room
+
+            # Game map 
+            if "map" in data:
+                self.map_file_name = data["map"]
+
+            if "starting_room" in data:
+                self.current_room_name = data["starting_room"]
+
+            if "starting_actor" in data:
+                self.current_actor_name = data["starting_actor"]
+
+            # Extract character initial position
+            if "actor_position" in data:
+                char_data = data["actor_position"]
+                self.initial_actor_x = char_data.get("x", 0)
+                self.initial_actor_y = char_data.get("y", 0)
+
+        except (FileNotFoundError, json.JSONDecodeError) as e:
+            print(f"Error loading game data from {GAME_DATA_FILE}: {e}")
+
+

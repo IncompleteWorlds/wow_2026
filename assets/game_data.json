@@ -1,0 +1,18 @@
+{
+    "mouse_pointer": "assets/mouse_pointer.png",
+    "map": "assets/map_data.json",
+    "starting_room": "first",
+    "starting_actor": "mel",
+    "actor_position": {
+        "x": 390,
+        "y": 600
+    },
+    "actors": [
+        "knight",
+        "mel"
+    ],
+    "rooms": [
+        "first",
+        "second"
+    ]
+}

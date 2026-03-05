@@ -1,0 +1,72 @@
+{
+    "name": "second",
+    "description": "This is the second room in the game.",
+    "background": "assets/rooms/room_2.png",
+    "exits": [
+        {
+            "name": "Exit to First Room",
+            "room": "first_room",
+            "rectangle": {
+                "x": 100,
+                "y": 100,
+                "width": 50,
+                "height": 50
+            }
+        }
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "id": 1,
+                "label": "Point 1",
+                "x": 90,
+                "y": 723
+            },
+            {
+                "id": 2,
+                "label": "Point 2",
+                "x": 150,
+                "y": 670
+            },
+            {
+                "id": 3,
+                "label": "Point 3",
+                "x": 100,
+                "y": 650
+            },
+            {
+                "id": 4,
+                "label": "Point 4",
+                "x": 300,
+                "y": 705
+            },
+            {
+                "id": 5,
+                "label": "Point 5",
+                "x": 400,
+                "y": 720
+            }
+        ],
+        "edges": {
+            "1": [
+                2
+            ],
+            "2": [
+                3,
+                4
+            ],
+            "3": [
+                2,
+                7
+            ],
+            "4": [
+                2,
+                6,
+                5
+            ],
+            "5": [
+                4
+            ]
+        }
+    }
+}

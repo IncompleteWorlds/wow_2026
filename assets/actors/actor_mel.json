@@ -1,0 +1,30 @@
+{
+    "name": "Mel the Xplorer",
+    "speed": 45,
+    "sprite": {
+        "standing": [
+            "assets/sprites/mel/Idle_1.png",
+            "assets/sprites/mel/Idle_2.png",
+            "assets/sprites/mel/Idle_3.png",
+            "assets/sprites/mel/Idle_4.png",
+            "assets/sprites/mel/Idle_5.png",
+            "assets/sprites/mel/Idle_6.png",
+            "assets/sprites/mel/Idle_7.png",
+            "assets/sprites/mel/Idle_8.png",
+            "assets/sprites/mel/Idle_9.png",
+            "assets/sprites/mel/Idle_10.png"
+        ],
+        "walking": [
+            "assets/sprites/mel/Walk_1.png",
+            "assets/sprites/mel/Walk_2.png",
+            "assets/sprites/mel/Walk_3.png",
+            "assets/sprites/mel/Walk_4.png",
+            "assets/sprites/mel/Walk_5.png",
+            "assets/sprites/mel/Walk_6.png",
+            "assets/sprites/mel/Walk_7.png",
+            "assets/sprites/mel/Walk_8.png",
+            "assets/sprites/mel/Walk_9.png",
+            "assets/sprites/mel/Walk_10.png"
+        ]
+    }
+}
