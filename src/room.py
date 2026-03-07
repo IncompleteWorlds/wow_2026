@@ -48,7 +48,9 @@ class Room:
                             rect_data.get("y", 0),
                             rect_data.get("width", 0),
                             rect_data.get("height", 0)
-                        )
+                        ),
+                        actor_x=exit_data.get("actor_x", 0),
+                        actor_y=exit_data.get("actor_y", 0)
                     )
                     self.list_exits.append(new_exit)
 
@@ -57,24 +59,43 @@ class Room:
             return
 
 
-    def update(self, dt: float, int_game_data) -> None:
+    def update(self, delta_time_secs: float, int_game_data) -> None:
         """Update all map items based on elapsed time.
 
         Args:
-            dt: Delta time since last frame in seconds.
+            delta_time_secs: Delta time since last frame in seconds.
         """
-        # Update the actor 
+        # Update the actors 
         if self.list_actors is not None:
             for actor in self.list_actors:
-                if actor.is_idle():
-                    if int_game_data.mouse_click_x is not None and \
-                       int_game_data.mouse_click_y is not None:
-                        # print(f"Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
-                        actor.walk_to(int_game_data.mouse_click_x, int_game_data.mouse_click_y)
+                # print(f"Actor state: {self.actor.state}, position: ({self.actor.x}, {self.actor.y})")
+                actor.update(delta_time_secs)
 
-                else:
-                    # print(f"Actor state: {self.actor.state}, position: ({self.actor.x}, {self.actor.y})")
-                    actor.update(dt)
+                if actor == int_game_data.current_actor:
+                    # If the actor is colliding with an exit, change room
+                    for current_exit in self.list_exits:
+                        if current_exit.rectangle and current_exit.rectangle.collidepoint(actor.x, actor.y):
+                            int_game_data.change_room(current_exit.room)
+                            self.remove_actor(actor)
+
+                            if current_exit.room == "map":
+                                int_game_data.show_map = True
+
+                            else:
+                                # Move the actor from the current room to the new room
+                                int_game_data.current_room.add_actor(actor)
+
+                                actor.set_position(current_exit.actor_x, current_exit.actor_y)
+                                actor.stop()
+
+                            return  # Exit early to avoid multiple room changes in one frame
+
+                    if int_game_data.mouse_click_x is not None and int_game_data.mouse_click_y is not None:
+                        # Stop any current movement before starting a new one
+                        int_game_data.current_actor.stop()  
+
+                        print(f"Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
+                        int_game_data.current_actor.walk_to(int_game_data.mouse_click_x, int_game_data.mouse_click_y)
 
 
     def draw(self, screen, int_game_data) -> None:
@@ -132,6 +153,7 @@ class Room:
         }
         
         edges = self.graph.get("edges", {})
+
         # iterate through edges: src -> [child_ids]
         for src_key, children in edges.items():
             try:
@@ -150,4 +172,12 @@ class Room:
                     # draw line from source to child
                     pygame.draw.line(screen, (0, 255, 0), src_pos, child_pos, 3)
 
+    def add_actor(self, actor: Actor) -> None:
+        """Add an actor to the room."""
+        self.list_actors.append(actor)
+
+    def remove_actor(self, actor: Actor) -> None:
+        """Remove an actor from the room."""
+        if actor in self.list_actors:
+            self.list_actors.remove(actor)
 

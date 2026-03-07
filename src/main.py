@@ -10,8 +10,8 @@ SCREEN_WIDTH = 1366
 SCREEN_HEIGHT = 768
 FPS = 30
 
-game_data = GameData()  
-game_map = GameMap()
+game_data_object = GameData()  
+map_object = GameMap()
 
 
 
@@ -46,113 +46,91 @@ def load_assets() -> None:
     """Load all game assets (images, sounds, etc.)"""
 
     # Load assets defined in GameData
-    game_data.load_assets() 
+    game_data_object.load_assets() 
 
     # Load map data from the specified file
-    game_map.load_map_data(game_data.map_file_name) 
-
-
-def change_room(new_room_name: str) -> None:
-    """Change the current room to a new one by name."""
-    if new_room_name in game_data.list_rooms:
-        game_data.current_room_name = new_room_name
-        game_data.current_room = game_data.list_rooms[new_room_name]
-        print(f"=== Changed to room: {new_room_name}")
-    else:
-        raise RuntimeError(f"Room '{new_room_name}' not found in game data.")
-
-
-def change_actor(new_actor_name: str, x: int, y: int) -> None:
-    """Change the current actor to a new one by name."""
-    if new_actor_name in game_data.list_actors:
-        game_data.current_actor_name = new_actor_name
-        game_data.current_actor = game_data.list_actors[new_actor_name]
-
-        game_data.current_actor.set_position(x, y)
-
-        print(f"=== Changed to actor: {new_actor_name}")
-    else:
-        raise RuntimeError(f"Actor '{new_actor_name}' not found in game data.") 
+    map_object.load_map_data(game_data_object.map_file_name) 
 
 
 def process_inputs(screen, clock) -> None:
     """Process user inputs and return relevant state (e.g., keys pressed)."""
 
     # Get current mouse position
-    game_data.mouse_x, game_data.mouse_y = pygame.mouse.get_pos() 
+    game_data_object.mouse_x, game_data_object.mouse_y = pygame.mouse.get_pos() 
 
     # Reset the mouse click coordinates     
-    game_data.mouse_click_x = None
-    game_data.mouse_click_y = None
+    game_data_object.mouse_click_x = None
+    game_data_object.mouse_click_y = None
 
     # Process all events in the queue 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            game_data.end_flag = True
+            game_data_object.end_flag = True
             
         # handle left mouse click
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # 1 = left mouse button
-                if game_data.debug_mode:
-                        print(f"   Mouse click at: {event.pos}")
-                game_data.mouse_click_x, game_data.mouse_click_y = event.pos
+                if game_data_object.debug_mode:
+                    print(f"   Mouse click at: {event.pos}")
+
+                game_data_object.mouse_click_x, game_data_object.mouse_click_y = event.pos
 
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_m:
-                # Show map 
-                game_map.run(screen, clock, FPS, game_data)
+                game_data_object.show_map = not game_data_object.show_map
 
             elif event.key == pygame.K_ESCAPE:
-                game_data.end_flag = True
+                game_data_object.end_flag = True
 
             elif event.key == pygame.K_g:
                 # Toggle grid/graph overlay visibility
-                game_data.grid_visible = not game_data.grid_visible
+                game_data_object.grid_visible = not game_data_object.grid_visible
 
             elif event.key == pygame.K_d:
-                game_data.debug_mode = not game_data.debug_mode
-    
-    # game_data.keys = pygame.key.get_pressed()
+                game_data_object.debug_mode = not game_data_object.debug_mode
+
+            elif event.key == pygame.K_EQUALS:
+                game_data_object.current_actor.increase_speed()
+
+            elif event.key == pygame.K_MINUS:
+                game_data_object.current_actor.decrease_speed()
+
+
+    # game_data_object.keys = pygame.key.get_pressed()
 
     return 
 
 
-def update_objects(delta_time_secs) -> None:
+def update_objects(screen, clock, delta_time_secs) -> None:
     """Update all game objects based on time passed and current input."""
     # e.g., player.update(dt, keys)
 
-    if game_data.current_room is not None:
-        game_data.current_room.update(delta_time_secs, game_data)
+    if game_data_object.current_room is not None:
+        game_data_object.current_room.update(delta_time_secs, game_data_object)
 
-    if game_data.current_actor is not None:
-        game_data.current_actor.update(delta_time_secs)
+    if game_data_object.show_map:
+        game_data_object.show_map = False
 
-        if game_data.mouse_click_x is not None and game_data.mouse_click_y is not None:
-            print(f"Walking to: ({game_data.mouse_click_x}, {game_data.mouse_click_y})")
-            game_data.current_actor.walk_to(game_data.mouse_click_x, game_data.mouse_click_y)
+        # Show map 
+        map_object.run(screen, clock, FPS, game_data_object)
 
 
 def redraw_screen(screen) -> None:
     """Redraw the entire screen and draw the mouse pointer."""
 
-    screen.fill((0, 0, 0))  # Clear with black
+    # Clear with black
+    screen.fill((0, 0, 0))  
 
-    # draw objects here
-    # Here you would draw your game objects, UI, etc.
-
-    if game_data.current_room is not None:
-        game_data.current_room.draw(screen, game_data)
-
-    if game_data.current_actor is not None:
-        game_data.current_actor.draw(screen)
+    if game_data_object.current_room is not None:
+        game_data_object.current_room.draw(screen, game_data_object)
 
     # draw custom pointer if loaded
-    if game_data.mouse_pointer is not None:
+    if game_data_object.mouse_pointer is not None:
         # center the pointer image on the mouse coordinates so it behaves like a normal cursor
-        ptr_rect = game_data.mouse_pointer.get_rect()
-        draw_x = game_data.mouse_x - ptr_rect.width // 2
-        draw_y = game_data.mouse_y - ptr_rect.height // 2
-        screen.blit(game_data.mouse_pointer, (draw_x, draw_y))
+        ptr_rect = game_data_object.mouse_pointer.get_rect()
+        draw_x = game_data_object.mouse_x - ptr_rect.width // 2
+        draw_y = game_data_object.mouse_y - ptr_rect.height // 2
+        screen.blit(game_data_object.mouse_pointer, (draw_x, draw_y))
 
     # Update the full display
     pygame.display.flip()  
@@ -172,8 +150,12 @@ def main():
     # Load any graphics/sounds/etc
     load_assets()
 
-    change_room(game_data.current_room_name)
-    change_actor(game_data.current_actor_name, game_data.initial_actor_x, game_data.initial_actor_y)
+    # Set the initial room and actor based on game data
+    game_data_object.change_room(game_data_object.current_room_name)
+    game_data_object.change_actor(game_data_object.current_actor_name, game_data_object.initial_actor_x, game_data_object.initial_actor_y)
+
+    if game_data_object.current_room is not None and game_data_object.current_actor is not None:
+        game_data_object.current_room.add_actor(game_data_object.current_actor)
 
     # hide the default OS cursor so only our custom image is visible
     pygame.mouse.set_visible(False)
@@ -189,25 +171,23 @@ def main():
 
         # Read inputs
         process_inputs(screen, clock)
-        if game_data.end_flag: 
+        if game_data_object.end_flag: 
             running = False
             continue
 
         # Update game objects
-        update_objects(dt)
+        update_objects(screen, clock, dt)
 
         # Redraw screen
         redraw_screen(screen)
 
         # Debug 
-        if game_data.debug_mode:
+        if game_data_object.debug_mode:
             counter += 1
-            if counter % 10 == 0 and game_data.mouse_click_x != 0 and game_data.mouse_click_y !=0:
-                print(f"Mouse X: {game_data.mouse_click_x}, Mouse Y: {game_data.mouse_click_y}")
-                game_data.mouse_click_x = None
-                game_data.mouse_click_y = None
-
-
+            if counter % 10 == 0 and game_data_object.mouse_click_x != 0 and game_data_object.mouse_click_y !=0:
+                print(f"Mouse X: {game_data_object.mouse_x}, Mouse Y: {game_data_object.mouse_y}")
+                game_data_object.mouse_click_x = None
+                game_data_object.mouse_click_y = None
 
     pygame.quit()
     sys.exit()

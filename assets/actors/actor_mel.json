@@ -14,17 +14,29 @@
             "assets/sprites/mel/Idle_9.png",
             "assets/sprites/mel/Idle_10.png"
         ],
-        "walking": [
-            "assets/sprites/mel/Walk_1.png",
-            "assets/sprites/mel/Walk_2.png",
-            "assets/sprites/mel/Walk_3.png",
-            "assets/sprites/mel/Walk_4.png",
-            "assets/sprites/mel/Walk_5.png",
-            "assets/sprites/mel/Walk_6.png",
-            "assets/sprites/mel/Walk_7.png",
-            "assets/sprites/mel/Walk_8.png",
-            "assets/sprites/mel/Walk_9.png",
-            "assets/sprites/mel/Walk_10.png"
+        "walking_left": [
+            "assets/sprites/mel/Walk_Left_1.png",
+            "assets/sprites/mel/Walk_Left_2.png",
+            "assets/sprites/mel/Walk_Left_3.png",
+            "assets/sprites/mel/Walk_Left_4.png",
+            "assets/sprites/mel/Walk_Left_5.png",
+            "assets/sprites/mel/Walk_Left_6.png",
+            "assets/sprites/mel/Walk_Left_7.png",
+            "assets/sprites/mel/Walk_Left_8.png",
+            "assets/sprites/mel/Walk_Left_9.png",
+            "assets/sprites/mel/Walk_Left_10.png"
+        ],
+        "walking_right": [
+            "assets/sprites/mel/Walk_Right_1.png",
+            "assets/sprites/mel/Walk_Right_2.png",
+            "assets/sprites/mel/Walk_Right_3.png",
+            "assets/sprites/mel/Walk_Right_4.png",
+            "assets/sprites/mel/Walk_Right_5.png",
+            "assets/sprites/mel/Walk_Right_6.png",
+            "assets/sprites/mel/Walk_Right_7.png",
+            "assets/sprites/mel/Walk_Right_8.png",
+            "assets/sprites/mel/Walk_Right_9.png",
+            "assets/sprites/mel/Walk_Right_10.png"
         ]
     }
 }

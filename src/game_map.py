@@ -85,13 +85,14 @@ class GameMap:
                     exits_data = data["exits"]
                     for exit_data in exits_data:
                         rectangle_data = exit_data.get("rectangle", [0, 0, 0, 0])
-                        
                         new_exit = Exit(name = exit_data.get("name", ""),
                                         room = exit_data.get("room", ""),
                                         rectangle = pygame.Rect(rectangle_data.get("x", 0), 
                                                     rectangle_data.get("y", 0), 
                                                     rectangle_data.get("width", 0), 
-                                                    rectangle_data.get("height", 0)))
+                                                    rectangle_data.get("height", 0)),
+                                        actor_x=exit_data.get("actor_x", 0),
+                                        actor_y=exit_data.get("actor_y", 0))
             
                         self.list_exits.append(new_exit)
 
@@ -138,12 +139,15 @@ class GameMap:
         return False
 
 
-    def update(self, dt: float) -> None:
+    def update(self, dt: float) -> bool:
         """Update all map items based on elapsed time.
 
         Args:
             dt: Delta time since last frame in seconds.
         """
+        if self.int_game_data is None:
+            return False
+        
         # Update the actor 
         if self.actor is not None:
             if self.actor.is_idle():
@@ -155,6 +159,21 @@ class GameMap:
             else:
                 # print(f"Actor state: {self.actor.state}, position: ({self.actor.x}, {self.actor.y})")
                 self.actor.update(dt)
+
+            # Check if actor is in a Exit 
+            for current_exit in self.list_exits:
+                if current_exit.rectangle and current_exit.rectangle.collidepoint(self.actor.x, self.actor.y):
+                    self.int_game_data.change_room(current_exit.room)
+
+                    self.int_game_data.current_room.add_actor(self.int_game_data.current_actor)
+
+                    self.int_game_data.current_actor.set_position(current_exit.actor_x, current_exit.actor_y)
+
+                    self.int_game_data.show_map = False
+                    return True 
+                
+        # Do not stop the loop 
+        return False
 
 
     def show_grid(self) -> None:
@@ -265,7 +284,9 @@ class GameMap:
                 continue
 
             # Update items
-            self.update(dt)
+            if self.update(dt):
+                running = False
+                continue
 
             # Draw everything
             self.draw()

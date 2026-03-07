@@ -12,4 +12,6 @@ class Exit:
     name: str
     room: str
     rectangle: pygame.Rect
+    actor_x : int
+    actor_y : int
 

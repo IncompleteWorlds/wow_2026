@@ -5,13 +5,15 @@
     "exits": [
         {
             "name": "Exit to First Room",
-            "room": "first_room",
+            "room": "first",
             "rectangle": {
-                "x": 100,
-                "y": 100,
-                "width": 50,
-                "height": 50
-            }
+                "x": 535,
+                "y": 200,
+                "width": 100,
+                "height": 35
+            },
+            "actor_x": 395,
+            "actor_y": 260
         }
     ],
     "graph": {

@@ -16,10 +16,12 @@
             "room": "first",
             "rectangle": {
                 "x": 645,
-                "y": 430,
-                "width": 50,
+                "y": 435,
+                "width": 70,
                 "height": 30
-            }
+            },
+            "actor_x": 395,
+            "actor_y": 260
         },
         {
             "name": "exit_2",
@@ -27,9 +29,11 @@
             "rectangle": {
                 "x": 280,
                 "y": 345,
-                "width": 60,
+                "width": 80,
                 "height": 30
-            }
+            },
+            "actor_x": 585,
+            "actor_y": 270
         }
     ],
     "graph": {
@@ -37,8 +41,8 @@
             {
                 "id": 1,
                 "label": "Point 1",
-                "x": 90,
-                "y": 723
+                "x": 100,
+                "y": 735
             },
             {
                 "id": 2,

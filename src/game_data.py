@@ -34,6 +34,8 @@ class GameData:
     grid_visible = False
     debug_mode = False
 
+    show_map = False
+
     map_file_name: str = ""
 
     # list of rooms
@@ -109,3 +111,29 @@ class GameData:
             print(f"Error loading game data from {GAME_DATA_FILE}: {e}")
 
 
+    def change_room(self, new_room_name: str) -> None:
+        """Change the current room to a new one by name."""
+        if new_room_name in self.list_rooms:
+            self.current_room_name = new_room_name
+            self.current_room = self.list_rooms[new_room_name]
+            print(f"=== Changed to room: {new_room_name}")
+
+        elif new_room_name == "map":
+            self.current_room_name = ""
+            self.current_room = None 
+            
+        else:
+            raise RuntimeError(f"Room '{new_room_name}' not found in game data.")
+
+
+    def change_actor(self, new_actor_name: str, x: int, y: int) -> None:
+        """Change the current actor to a new one by name."""
+        if new_actor_name in self.list_actors:
+            self.current_actor_name = new_actor_name
+            self.current_actor = self.list_actors[new_actor_name]
+
+            self.current_actor.set_position(x, y)
+
+            print(f"=== Changed to actor: {new_actor_name}")
+        else:
+            raise RuntimeError(f"Actor '{new_actor_name}' not found in game data.") 

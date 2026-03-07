@@ -4,11 +4,14 @@ import pygame
 from enum import Enum
 from typing import List, Dict, Optional
 
+SPEED_INCREMENT = 5
+
 
 class ActorState(Enum):
     """Enumeration of possible actor states."""
     STANDING = "standing"
-    WALKING = "walking"
+    WALKING_LEFT = "walking_left"
+    WALKING_RIGHT = "walking_right"
 
 
 class Actor(pygame.sprite.Sprite):
@@ -44,7 +47,8 @@ class Actor(pygame.sprite.Sprite):
         # Animation
         self.frames: Dict[ActorState, List[pygame.Surface]] = {
             ActorState.STANDING: [],
-            ActorState.WALKING: [],
+            ActorState.WALKING_LEFT: [],
+            ActorState.WALKING_RIGHT: [],
         }
         self.current_frame_index = 0
         self.frame_timer = 0.0
@@ -94,6 +98,7 @@ class Actor(pygame.sprite.Sprite):
             # convert any non-list values to list just to be safe
             if not isinstance(paths, list):
                 paths = [paths]
+
             self.frames[state] = [pygame.image.load(p) for p in paths]
 
         # initialize the current image from standing frames if available
@@ -147,6 +152,7 @@ class Actor(pygame.sprite.Sprite):
             self.current_frame_index = 0
             self.image = frames[0]
 
+
     def set_state(self, new_state: ActorState) -> None:
         """Change the actor state.
 
@@ -159,13 +165,14 @@ class Actor(pygame.sprite.Sprite):
             self.current_frame_index = 0
             self.frame_timer = 0.0
 
+
     def update(self, dt: float) -> None:
         """Update the actor, including animation and position.
 
         Args:
             dt: Delta time since last frame in seconds.
         """
-        if self.state == ActorState.WALKING:
+        if self.state == ActorState.WALKING_LEFT or self.state == ActorState.WALKING_RIGHT:
             self.move_towards1(dt)
 
         # Update animation frame
@@ -205,6 +212,7 @@ class Actor(pygame.sprite.Sprite):
         # Default implementation: just update animation
         self.update(dt)
 
+
     def move(self, dx: float, dy: float) -> None:
         """Move the actor by a relative offset.
 
@@ -215,6 +223,7 @@ class Actor(pygame.sprite.Sprite):
         self.x += dx
         self.y += dy
         self.rect.midbottom = (int(self.x), int(self.y))
+
 
     def set_position(self, x: int, y: int) -> None:
         """Set the actor's absolute position.
@@ -227,6 +236,7 @@ class Actor(pygame.sprite.Sprite):
         self.y = y
         self.rect.midbottom = (self.x, self.y)
 
+
     def get_position(self) -> tuple:
         """Get the actor's current position.
 
@@ -235,6 +245,7 @@ class Actor(pygame.sprite.Sprite):
         """
         return (self.x, self.y)
 
+
     def get_state(self) -> ActorState:
         """Get the actor's current state.
 
@@ -242,6 +253,7 @@ class Actor(pygame.sprite.Sprite):
             The current ActorState.
         """
         return self.state
+
 
     def walk_to(self, new_target_x: int, new_target_y: int) -> None:
         """Set the actor's target position to walk towards.
@@ -253,13 +265,18 @@ class Actor(pygame.sprite.Sprite):
         self.target_x = new_target_x
         self.target_y = new_target_y
 
-        self.set_state(ActorState.WALKING)  
+        if self.x < new_target_x:
+            self.set_state(ActorState.WALKING_RIGHT)
+        else:
+            self.set_state(ActorState.WALKING_LEFT)
+
 
     def stop(self) -> None:
         """Stop the actor's movement and set state to standing."""
         self.set_state(ActorState.STANDING)
         self.target_x = self.x
         self.target_y = self.y
+
 
     def is_idle(self) -> bool:
         """Check if the actor is currently idle (not walking).
@@ -269,11 +286,17 @@ class Actor(pygame.sprite.Sprite):
         """
         return self.state == ActorState.STANDING
     
+
     def is_walking(self) -> bool:
         """Check if the actor is currently walking.
 
         Returns:
             True if the actor is walking, False otherwise.
         """
-        return self.state == ActorState.WALKING
+        return self.state in (ActorState.WALKING_LEFT, ActorState.WALKING_RIGHT)
     
+    def increase_speed(self) -> None:
+        self.speed += SPEED_INCREMENT
+
+    def decrease_speed(self) -> None:
+        self.speed -= SPEED_INCREMENT

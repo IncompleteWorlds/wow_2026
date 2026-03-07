@@ -1,10 +1,11 @@
 {
-    "name": "Mel the Xplorer",
-    "speed": 50,
+    "name": "Knight Map",
+    "speed": 60,
     "sprite": {
         "standing": [
             "assets/sprites/knight/Idle_1.png"
         ],
-        "walking": []
+        "walking_left": [],
+        "walking_right": []
     }
 }

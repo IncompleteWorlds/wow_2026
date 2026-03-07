@@ -11,17 +11,21 @@
                 "y": 640,
                 "width": 90,
                 "height": 65
-            }
+            },
+            "actor_x": 0,
+            "actor_y": 0
         },
         {
             "name": "Exit to Second Room",
-            "room": "second_room",
+            "room": "second",
             "rectangle": {
                 "x": 350,
-                "y": 175,
+                "y": 180,
                 "width": 85,
                 "height": 35
-            }
+            },
+            "actor_x": 585,
+            "actor_y": 270
         }
     ],
     "graph": {
