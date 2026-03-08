@@ -16,8 +16,8 @@
             "room": "first",
             "rectangle": {
                 "x": 645,
-                "y": 435,
-                "width": 70,
+                "y": 420,
+                "width": 80,
                 "height": 30
             },
             "actor_x": 395,
@@ -27,8 +27,8 @@
             "name": "exit_2",
             "room": "second",
             "rectangle": {
-                "x": 280,
-                "y": 345,
+                "x": 627,
+                "y": 166,
                 "width": 80,
                 "height": 30
             },
