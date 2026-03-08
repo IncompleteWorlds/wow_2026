@@ -2,7 +2,8 @@ import json
 import pygame
 
 from actor import Actor
-from exits import Exit 
+from exits import Exit
+from graph import Graph 
 
 
 class GameMap:
@@ -30,7 +31,8 @@ class GameMap:
         self.position_y = 0
         
         # Graph data structure
-        self.graph = {}  # Dictionary to store graph nodes and edges
+        # Dictionary to store graph nodes and edges
+        self.graph = Graph() 
 
         # List of exits
         self.list_exits : list[Exit] = []
@@ -78,7 +80,8 @@ class GameMap:
                 
                 # Extract graph data
                 if "graph" in data:
-                    self.graph = data["graph"]
+                    graph_data = data["graph"]
+                    self.graph.load(graph_data)
 
                 # Extract list of exits
                 if "exits" in data:
@@ -150,24 +153,20 @@ class GameMap:
         
         # Update the actor 
         if self.actor is not None:
+            # print(f"Actor state: {self.actor.state}, position: ({self.actor.x}, {self.actor.y})")
+            self.actor.update(dt)
+
             if self.actor.is_idle():
                 if self.int_game_data.mouse_click_x is not None and \
                    self.int_game_data.mouse_click_y is not None:
                     # print(f"Walking to: ({self.int_game_data.mouse_click_x}, {self.int_game_data.mouse_click_y})")
                     self.actor.walk_to(self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
 
-            else:
-                # print(f"Actor state: {self.actor.state}, position: ({self.actor.x}, {self.actor.y})")
-                self.actor.update(dt)
-
             # Check if actor is in a Exit 
             for current_exit in self.list_exits:
                 if current_exit.rectangle and current_exit.rectangle.collidepoint(self.actor.x, self.actor.y):
-                    self.int_game_data.change_room(current_exit.room)
-
-                    self.int_game_data.current_room.add_actor(self.int_game_data.current_actor)
-
-                    self.int_game_data.current_actor.set_position(current_exit.actor_x, current_exit.actor_y)
+                    # Update the current actor, not this actor 
+                    self.int_game_data.change_room(current_exit.room, current_exit.actor_x, current_exit.actor_y)
 
                     self.int_game_data.show_map = False
                     return True 
@@ -177,52 +176,9 @@ class GameMap:
 
 
     def show_grid(self) -> None:
-        """Overlay grid lines and graph edges on the screen.
+        self.graph.show_grid(self.screen)
 
-        The graph is expected to follow the same structure loaded from the
-        JSON file (a dictionary with "nodes" list and "edges" mapping).
-        Lines are drawn between each node and its children.
-        """
-        # draw regular grid
-        # grid_size = 32  # size of each grid cell in pixels
-        # w, h = self.screen.get_size()
-        # for x in range(0, w, grid_size):
-        #     pygame.draw.line(self.screen, (255, 255, 255), (x, 0), (x, h), 3)
-        # for y in range(0, h, grid_size):
-        #     pygame.draw.line(self.screen, (255, 255, 255), (0, y), (w, y), 3)
-
-        # draw graph edges if graph data is available
-        if not self.graph:
-            return
-
-        # print(f"Graph data: {self.graph}")
-
-        # create a mapping from node id -> (x, y) coordinates
-        node_positions = {
-            node["id"]: (node.get("x", 0), node.get("y", 0))
-            for node in self.graph.get("nodes", [])
-        }
-        
-        edges = self.graph.get("edges", {})
-        # iterate through edges: src -> [child_ids]
-        for src_key, children in edges.items():
-            try:
-                # JSON keys might be strings
-                src_id = int(src_key)
-            except (ValueError, TypeError):
-                src_id = src_key
-
-            src_pos = node_positions.get(src_id)
-            if not src_pos:
-                continue
-
-            for child_id in children:
-                child_pos = node_positions.get(child_id)
-                if child_pos:
-                    # draw line from source to child
-                    pygame.draw.line(self.screen, (0, 255, 0), src_pos, child_pos, 3)
-
-
+    
     def show_exits(self) -> None:
         """Overlay grid lines and graph edges on the screen."""
 

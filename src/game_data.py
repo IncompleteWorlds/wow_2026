@@ -111,16 +111,32 @@ class GameData:
             print(f"Error loading game data from {GAME_DATA_FILE}: {e}")
 
 
-    def change_room(self, new_room_name: str) -> None:
-        """Change the current room to a new one by name."""
+    def change_room(self, new_room_name: str, new_actor_x : int, new_actor_y : int) -> None:
+        """Change the current room to a new one by name and move the current actor to it."""
+        if new_room_name == self.current_room_name:
+            return
+
         if new_room_name in self.list_rooms:
+            # Move the actor from the current room to new room 
+            if self.current_room is not None:
+                self.current_room.remove_actor(self.current_actor)
+
             self.current_room_name = new_room_name
             self.current_room = self.list_rooms[new_room_name]
+
+            if self.current_actor is not None:
+                if self.current_actor is not self.current_room.list_actors:
+                    self.current_room.add_actor(self.current_actor)
+
+                # Stop and update the position 
+                self.current_actor.set_position(new_actor_x, new_actor_y)
+                self.current_actor.stop()
+
             print(f"=== Changed to room: {new_room_name}")
 
         elif new_room_name == "map":
             self.current_room_name = ""
-            self.current_room = None 
+            self.current_room = None
             
         else:
             raise RuntimeError(f"Room '{new_room_name}' not found in game data.")

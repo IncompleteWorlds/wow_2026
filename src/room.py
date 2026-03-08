@@ -4,6 +4,7 @@ import pygame
 
 from exits import Exit
 from actor import Actor
+from graph import Graph
 
 
 class Room:
@@ -20,6 +21,8 @@ class Room:
 
         self.list_exits : list[Exit] = []
 
+        self.graph= Graph()
+
         self._load_assets()
 
 
@@ -35,7 +38,8 @@ class Room:
                 self.background = pygame.image.load(map_background_path)
                         
             if "graph" in data:
-                self.graph = data["graph"]
+                graph_data = data["graph"]
+                self.graph.load(graph_data)
 
             if "exits" in data:
                 for exit_data in data["exits"]:
@@ -75,18 +79,10 @@ class Room:
                     # If the actor is colliding with an exit, change room
                     for current_exit in self.list_exits:
                         if current_exit.rectangle and current_exit.rectangle.collidepoint(actor.x, actor.y):
-                            int_game_data.change_room(current_exit.room)
-                            self.remove_actor(actor)
+                            int_game_data.change_room(current_exit.room, current_exit.actor_x, current_exit.actor_y)
 
                             if current_exit.room == "map":
                                 int_game_data.show_map = True
-
-                            else:
-                                # Move the actor from the current room to the new room
-                                int_game_data.current_room.add_actor(actor)
-
-                                actor.set_position(current_exit.actor_x, current_exit.actor_y)
-                                actor.stop()
 
                             return  # Exit early to avoid multiple room changes in one frame
 
@@ -116,65 +112,27 @@ class Room:
             self.show_exits(screen)
 
 
-
     def show_exits(self, screen) -> None:
         """Draw exit rectangles for debugging."""
+        font = pygame.font.Font(None, 24)
+
         for exit in self.list_exits:
             if exit.rectangle is not None:
                 pygame.draw.rect(screen, (255, 0, 0), exit.rectangle, 2)
 
+            # Draw the name 
+            text_surface = font.render(exit.room, True, (255, 0, 0))
+            screen.blit(text_surface, (exit.rectangle.x + 5, exit.rectangle.y - 15))
 
-    def show_grid(self,screen) -> None:
-        """Draw grid and graph overlay for debugging."""
-        # if hasattr(self, "graph") and self.graph is not None:
-        #     for node in self.graph.get("nodes", []):
-        #         x = node.get("x", 0)
-        #         y = node.get("y", 0)
-        #         pygame.draw.circle(screen, (0, 255, 0), (x, y), 5)
 
-        #     for edge in self.graph.get("edges", []):
-        #         start_node_id = edge.get("start")
-        #         end_node_id = edge.get("end")
-        #         start_node = next((n for n in self.graph.get("nodes", []) if n.get("id") == start_node_id), None)
-        #         end_node = next((n for n in self.graph.get("nodes", []) if n.get("id") == end_node_id), None)
-        #         if start_node and end_node:
-        #             pygame.draw.line(screen, (0, 255, 0), (start_node["x"], start_node["y"]), (end_node["x"], end_node["y"]), 2)
-                    
-        # draw graph edges if graph data is available
-        if not self.graph:
-            return
+    def show_grid(self, screen) -> None:
+        self.graph.show_grid(screen)
 
-        # print(f"Graph data: {self.graph}")
-
-        # create a mapping from node id -> (x, y) coordinates
-        node_positions = {
-            node["id"]: (node.get("x", 0), node.get("y", 0))
-            for node in self.graph.get("nodes", [])
-        }
-        
-        edges = self.graph.get("edges", {})
-
-        # iterate through edges: src -> [child_ids]
-        for src_key, children in edges.items():
-            try:
-                # JSON keys might be strings
-                src_id = int(src_key)
-            except (ValueError, TypeError):
-                src_id = src_key
-
-            src_pos = node_positions.get(src_id)
-            if not src_pos:
-                continue
-
-            for child_id in children:
-                child_pos = node_positions.get(child_id)
-                if child_pos:
-                    # draw line from source to child
-                    pygame.draw.line(screen, (0, 255, 0), src_pos, child_pos, 3)
 
     def add_actor(self, actor: Actor) -> None:
         """Add an actor to the room."""
         self.list_actors.append(actor)
+
 
     def remove_actor(self, actor: Actor) -> None:
         """Remove an actor from the room."""

@@ -151,11 +151,18 @@ def main():
     load_assets()
 
     # Set the initial room and actor based on game data
-    game_data_object.change_room(game_data_object.current_room_name)
     game_data_object.change_actor(game_data_object.current_actor_name, game_data_object.initial_actor_x, game_data_object.initial_actor_y)
 
-    if game_data_object.current_room is not None and game_data_object.current_actor is not None:
+    # Set the staring the room 
+    game_data_object.current_room = game_data_object.list_rooms[game_data_object.current_room_name]
+
+    if game_data_object.current_actor is not None:
         game_data_object.current_room.add_actor(game_data_object.current_actor)
+
+        # Stop and update the position 
+        game_data_object.current_actor.set_position(game_data_object.initial_actor_x, game_data_object.initial_actor_y)
+        game_data_object.current_actor.stop()
+
 
     # hide the default OS cursor so only our custom image is visible
     pygame.mouse.set_visible(False)

@@ -43,6 +43,7 @@ class Actor(pygame.sprite.Sprite):
         # State management
         self.state = ActorState.STANDING
         self.previous_state = None
+        self.next_state = None
 
         # Animation
         self.frames: Dict[ActorState, List[pygame.Surface]] = {
@@ -111,7 +112,7 @@ class Actor(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midbottom=(self.x, self.y))
 
 
-    def move_towards1(self,  delta_time):
+    def move_towards(self,  delta_time):
         # Calculate the direction vector
         direction_x = self.target_x - self.x
         direction_y = self.target_y - self.y
@@ -173,7 +174,10 @@ class Actor(pygame.sprite.Sprite):
             dt: Delta time since last frame in seconds.
         """
         if self.state == ActorState.WALKING_LEFT or self.state == ActorState.WALKING_RIGHT:
-            self.move_towards1(dt)
+            self.move_towards(dt)
+
+        elif self.state == ActorState.STANDING:
+            pass
 
         # Update animation frame
         if len(self.frames[self.state]) > 0:
@@ -197,7 +201,6 @@ class Actor(pygame.sprite.Sprite):
 
         # draw_x = self.x - self.rect.width // 2
         # draw_y = self.y - self.rect.height
-
         # surface.blit(self.image, (draw_x, draw_y))
         
 
@@ -295,8 +298,10 @@ class Actor(pygame.sprite.Sprite):
         """
         return self.state in (ActorState.WALKING_LEFT, ActorState.WALKING_RIGHT)
     
+
     def increase_speed(self) -> None:
         self.speed += SPEED_INCREMENT
+
 
     def decrease_speed(self) -> None:
         self.speed -= SPEED_INCREMENT
