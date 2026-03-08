@@ -165,8 +165,7 @@ class GameMap:
                     list_positions = get_path(self.graph, self.actor.x, self.actor.y, 
                                                           self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
 
-                    print(f"MAP Walking to: ({self.int_game_data.mouse_click_x}, {self.int_game_data.mouse_click_y})")
-                    # self.actor.walk_to(self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
+                    # print(f"MAP Walking to: ({self.int_game_data.mouse_click_x}, {self.int_game_data.mouse_click_y})")
                     self.actor.walk_path(list_positions, self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
 
             # Check if actor is in a Exit 

@@ -1,17 +1,9 @@
-
-
-
 from dataclasses import dataclass
-# from typing import TypeVar
 
 import json
 from typing import Optional
 
 import pygame
-
-# from path_finding import Location, NodeIndex
-
-# Location = TypeVar('Location')
 
 @dataclass 
 class GraphNode:
@@ -137,9 +129,9 @@ class Graph:
         tmp_index = target_node
         current_node_index = target_node
 
-        print("   Path: ", end="")
+        # print("   Path: ", end="")
         while current_node_index != start_node:
-            print(f"{current_node_index} -> ", end="")
+            # print(f"{current_node_index} -> ", end="")
             # Store the position of the current node 
             node = self.nodes[current_node_index]
             output_list.append((node.x, node.y))
@@ -148,9 +140,12 @@ class Graph:
             tmp_index = list_node_index[current_node_index]
             current_node_index = tmp_index
 
+
         # Add the start point 
-        print(f"{current_node_index}")
+        # print(f"{current_node_index}")
         node = self.nodes[current_node_index]
         output_list.append((node.x, node.y))
+
+        output_list.reverse()
 
         return output_list
