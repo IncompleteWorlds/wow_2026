@@ -3,7 +3,8 @@ import pygame
 
 from actor import Actor
 from exits import Exit
-from graph import Graph 
+from graph import Graph
+from path_finding import get_path 
 
 
 class GameMap:
@@ -159,8 +160,14 @@ class GameMap:
             if self.actor.is_idle():
                 if self.int_game_data.mouse_click_x is not None and \
                    self.int_game_data.mouse_click_y is not None:
-                    # print(f"Walking to: ({self.int_game_data.mouse_click_x}, {self.int_game_data.mouse_click_y})")
-                    self.actor.walk_to(self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
+                    self.actor.stop()
+
+                    list_positions = get_path(self.graph, self.actor.x, self.actor.y, 
+                                                          self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
+
+                    print(f"MAP Walking to: ({self.int_game_data.mouse_click_x}, {self.int_game_data.mouse_click_y})")
+                    # self.actor.walk_to(self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
+                    self.actor.walk_path(list_positions, self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
 
             # Check if actor is in a Exit 
             for current_exit in self.list_exits:

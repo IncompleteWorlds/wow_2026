@@ -5,6 +5,7 @@ import pygame
 from exits import Exit
 from actor import Actor
 from graph import Graph
+from path_finding import get_path
 
 
 class Room:
@@ -90,9 +91,15 @@ class Room:
                         # Stop any current movement before starting a new one
                         int_game_data.current_actor.stop()  
 
-                        print(f"Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
-                        int_game_data.current_actor.walk_to(int_game_data.mouse_click_x, int_game_data.mouse_click_y)
+                        print(f"Room Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
 
+                        # int_game_data.current_actor.walk_to(int_game_data.mouse_click_x, int_game_data.mouse_click_y)
+
+                        list_positions = get_path(self.graph, int_game_data.current_actor.x, int_game_data.current_actor.y, 
+                                                              int_game_data.mouse_click_x, int_game_data.mouse_click_y)
+                        
+                        # self.actor.walk_to(self.int_game_data.mouse_click_x, self.int_game_data.mouse_click_y)
+                        int_game_data.current_actor.walk_path(list_positions, int_game_data.mouse_click_x, int_game_data.mouse_click_y)
 
     def draw(self, screen, int_game_data) -> None:
         """Draw the map and all its items."""

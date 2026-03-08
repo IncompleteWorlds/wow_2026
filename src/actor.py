@@ -274,6 +274,14 @@ class Actor(pygame.sprite.Sprite):
             self.set_state(ActorState.WALKING_LEFT)
 
 
+    def walk_path(self, list_points: list[tuple[int,int]], new_target_x: int, new_target_y: int) -> None:
+        """Actor walks to a point after another, until it reaches the target point."""
+
+        self.list_points = list_points
+
+        self.walk_to(new_target_x, new_target_y)
+
+
     def stop(self) -> None:
         """Stop the actor's movement and set state to standing."""
         self.set_state(ActorState.STANDING)

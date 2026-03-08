@@ -5,24 +5,26 @@ from dataclasses import dataclass
 # from typing import TypeVar
 
 import json
+from typing import Optional
 
 import pygame
+
+# from path_finding import Location, NodeIndex
 
 # Location = TypeVar('Location')
 
 @dataclass 
 class GraphNode:
-    def __init__(self) -> None:
-        self.id : int
-        self.label : str 
-        self.x : int 
-        self.y : int 
+    id: int
+    label: str 
+    x: int 
+    y: int 
 
 
 
 class Graph:
     def __init__(self):
-        self.nodes: list[GraphNode] = []
+        self.nodes: dict[int, GraphNode] = {}
         self.edges: dict[int, list[int]] = {}
 
     def load(self, graph_data) -> None:
@@ -31,22 +33,27 @@ class Graph:
             nodes_data = graph_data.get('nodes')
             if nodes_data:
                 for node_data in nodes_data:
-                    node = GraphNode()
-                    node.id = node_data.get('id')
-                    node.label = node_data.get('label')
-                    node.x = node_data.get('x')
-                    node.y = node_data.get('y')
-                    self.nodes.append(node)
+                    node = GraphNode(
+                        id=node_data.get('id'),
+                        label=node_data.get('label'),
+                        x=node_data.get('x'),
+                        y=node_data.get('y')
+                    )
+                    self.nodes[node.id] = node
             
             # Load edges
             edges_data = graph_data.get('edges')
             if edges_data:
-                self.edges = edges_data
+                # Extract "edges" and convert keys from str to int
+                self.edges: dict[int, list[int]] = {
+                    int(k): v for k, v in edges_data.items()
+                }
 
     def neighbors(self, node_id: int) -> list[int]:
-        return self.edges[id]
+        """Return the list of Neighbors or Children of a GraphNode."""
+        return self.edges[node_id]
     
-    def get_nodes(self) -> list[GraphNode]:
+    def get_nodes(self) -> dict[int, GraphNode]:
         return self.nodes
     
     def get_edges(self) -> dict[int, list[int]]:
@@ -69,10 +76,12 @@ class Graph:
 
         # print(f"Graph data: {self.graph}")
 
+        font = pygame.font.Font(None, 24)
+
         # create a mapping from node id -> (x, y) coordinates
         node_positions = {
-            node.id: (node.x, node.y)
-            for node in self.nodes
+            node_id: (node.x, node.y)
+            for node_id, node in self.nodes.items()
         }
         
         edges = self.edges
@@ -88,19 +97,30 @@ class Graph:
             if not src_pos:
                 continue
 
+            # Draw node id 
+            text_surface = font.render(str(src_id), True, (255, 0, 0))
+            screen.blit(text_surface, (src_pos[0] + 5, src_pos[1] - 15))
+
             for child_id in children:
                 child_pos = node_positions.get(child_id)
                 if child_pos:
                     # draw line from source to child
                     pygame.draw.line(screen, (0, 255, 0), src_pos, child_pos, 3)
 
+    def _calculate_distance(self, a: tuple[int, int], b: tuple[int, int]) -> float:
+        (x1, y1) = a
+        (x2, y2) = b
+
+        return abs(x1 - x2) + abs(y1 - y2)
+    
     def get_closest_node(self, position_x : int, position_y: int) -> GraphNode | None:
+        """Return the closest GraphNode to a position (x,y)."""
         min_node = None
         
         min_distance = 9999999
         current_distance = 0
 
-        for current_node in self.nodes:
+        for current_node in self.nodes.values():
             current_distance = self._calculate_distance((position_x, position_y), 
                                                         (current_node.x, current_node.y))
             if current_distance < min_distance:
@@ -109,8 +129,28 @@ class Graph:
 
         return min_node
     
-    def _calculate_distance(self, a: tuple[int, int], b: tuple[int, int]) -> float:
-        (x1, y1) = a
-        (x2, y2) = b
+    
+    def convert_to_pair_points(self, start_node: int, target_node: int, list_node_index: dict[int, Optional[int]]) -> list[tuple[int,int]]:
+        """Convert a list of Node indexes to a list of positions(x,y)."""
+        output_list = []
 
-        return abs(x1 - x2) + abs(y1 - y2)
+        tmp_index = target_node
+        current_node_index = target_node
+
+        print("   Path: ", end="")
+        while current_node_index != start_node:
+            print(f"{current_node_index} -> ", end="")
+            # Store the position of the current node 
+            node = self.nodes[current_node_index]
+            output_list.append((node.x, node.y))
+
+            # Move to the parent node
+            tmp_index = list_node_index[current_node_index]
+            current_node_index = tmp_index
+
+        # Add the start point 
+        print(f"{current_node_index}")
+        node = self.nodes[current_node_index]
+        output_list.append((node.x, node.y))
+
+        return output_list
