@@ -100,27 +100,19 @@ class Graph:
                     pygame.draw.line(screen, (0, 255, 0), src_pos, child_pos, 3)
 
     def _calculate_distance(self, a: tuple[int, int], b: tuple[int, int]) -> float:
-        (x1, y1) = a
-        (x2, y2) = b
+        """Calculate the distance between two points."""
 
-        return abs(x1 - x2) + abs(y1 - y2)
+        # TODO: Implement the function
+
+        return 0.0
     
     def get_closest_node(self, position_x : int, position_y: int) -> GraphNode | None:
         """Return the closest GraphNode to a position (x,y)."""
         min_node = None
         
-        min_distance = 9999999
-        current_distance = 0
-
-        for current_node in self.nodes.values():
-            current_distance = self._calculate_distance((position_x, position_y), 
-                                                        (current_node.x, current_node.y))
-            if current_distance < min_distance:
-                min_distance = current_distance
-                min_node = current_node
+        # TODO: Implement the function
 
         return min_node
-    
     
     def convert_to_pair_points(self, start_node: int, target_node: int, list_node_index: dict[int, Optional[int]]) -> list[tuple[int,int]]:
         """Convert a list of Node indexes to a list of positions(x,y)."""
@@ -139,7 +131,6 @@ class Graph:
             # Move to the parent node
             tmp_index = list_node_index[current_node_index]
             current_node_index = tmp_index
-
 
         # Add the start point 
         # print(f"{current_node_index}")

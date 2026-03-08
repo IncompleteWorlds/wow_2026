@@ -1,6 +1,5 @@
 # Introduction
 
-
 # Installation
 
 Create a new virtual Python environment
@@ -27,4 +26,18 @@ Successfully installed pygame-2.6.1
 [notice] To update, run: pip install --upgrade pip
 ```
 
+# Notes
 
+Room data are defined in a JSON file, located in 'assets/rooms/'
+A room is composed of exits and a graph. A graph includes a list of nodes and
+a list of edges.
+
+Map is defined in the 'assets/map_data.json' file
+It contains among other things a graph; list of nodes and edges 
+
+Some debug info:
+- In a room; press 'g' to show the graph
+             press 'd' for showing some debug info
+
+- In the map; press 'g' to show the graph
+              press 'd' for showing some debug info

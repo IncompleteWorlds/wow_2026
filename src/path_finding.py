@@ -34,27 +34,10 @@ def get_path(graph: Graph, start_x: int, start_y: int, target_x: int, target_y: 
     return list_pair_points
 
 
-def breadth_first_search(graph: Graph, start: int, target: int) -> dict[int, Optional[int]]:
-    # Way forward
-    frontier = deque()
-    frontier.append(start)
-
-    # Way back to the starting point
+def breadth_first_search(graph: Graph, start_node_id: int, target_node_id: int) -> dict[int, Optional[int]]:
     came_from: dict[int, Optional[int]] = {}
-    came_from[start] = None
     
-    # while not frontier.empty():
-    while frontier:
-        current: int = frontier.popleft()
-        
-        # Early exit
-        if current == target: 
-            break
-        
-        for next in graph.neighbors(current):
-            if next not in came_from:
-                frontier.append(next)
-                came_from[next] = current
-    
+    # TODO: Implement the function
+
     return came_from
 

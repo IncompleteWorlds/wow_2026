@@ -91,7 +91,8 @@ class Room:
                         # Stop any current movement before starting a new one
                         int_game_data.current_actor.stop()  
 
-                        # print(f"Room Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
+                        if int_game_data.debug_mode:
+                            print(f"Room Walking to: ({int_game_data.mouse_click_x}, {int_game_data.mouse_click_y})")
                         list_positions = get_path(self.graph, int_game_data.current_actor.x, int_game_data.current_actor.y, 
                                                               int_game_data.mouse_click_x, int_game_data.mouse_click_y)
                         
