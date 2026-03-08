@@ -132,7 +132,7 @@ class GameData:
                 self.current_actor.set_position(new_actor_x, new_actor_y)
                 self.current_actor.stop()
 
-            print(f"=== Changed to room: {new_room_name}")
+            # print(f"=== Changed to room: {new_room_name}")
 
         elif new_room_name == "map":
             self.current_room_name = ""
@@ -150,6 +150,6 @@ class GameData:
 
             self.current_actor.set_position(x, y)
 
-            print(f"=== Changed to actor: {new_actor_name}")
+            # print(f"=== Changed to actor: {new_actor_name}")
         else:
             raise RuntimeError(f"Actor '{new_actor_name}' not found in game data.") 

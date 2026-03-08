@@ -1,17 +1,10 @@
-
-
-
-# from queue import Queue
 from collections import deque
 
 from typing import Optional, Protocol, TypeVar
 
 from graph import Graph
-# from collections import deque
 
 
-# Location = tuple[int, int]
-# NodeIndex = int
 
 def get_path(graph: Graph, start_x: int, start_y: int, target_x: int, target_y: int) -> list[tuple[int, int]]:
     """Find the path from the start point (x,y) to the target point (x,y)."""
@@ -37,7 +30,7 @@ def get_path(graph: Graph, start_x: int, start_y: int, target_x: int, target_y: 
     # Add the target position 
     list_pair_points.append((target_x, target_y))
 
-    print("*** List pairs: ", list_pair_points)
+    # print("*** List pairs: ", list_pair_points)
     return list_pair_points
 
 

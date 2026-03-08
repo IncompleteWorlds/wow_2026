@@ -112,35 +112,6 @@ class Actor(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midbottom=(self.x, self.y))
 
 
-    def move_towards(self,  delta_time):
-        # Calculate the direction vector
-        direction_x = self.target_x - self.x
-        direction_y = self.target_y - self.y
-
-        # Calculate distance
-        distance = (direction_x**2 + direction_y**2) ** 0.5
-
-        if distance > 0:
-            # Normalize direction vector
-            direction_x /= distance
-            direction_y /= distance
-            
-            # Calculate movement based on speed and delta time
-            movement = self.speed * delta_time
-            
-            # Move the actor
-            if movement < distance:
-                # self.x += direction_x * movement
-                # self.y += direction_y * movement
-                self.move(direction_x * movement, direction_y * movement)
-            else:
-                # Snap to the target if within movement distance
-                self.x = self.target_x
-                self.y = self.target_y
-        else:
-            self.stop()
-
-
     def set_frames(self, state: ActorState, frames: List[pygame.Surface]) -> None:
         """Set animation frames for a given state.
 
@@ -165,6 +136,41 @@ class Actor(pygame.sprite.Sprite):
             self.state = new_state
             self.current_frame_index = 0
             self.frame_timer = 0.0
+
+
+    def move_towards(self,  delta_time):
+        # Calculate the direction vector
+        direction_x = self.target_x - self.x
+        direction_y = self.target_y - self.y
+
+        # Calculate distance
+        distance = (direction_x**2 + direction_y**2) ** 0.5
+
+        if distance > 0:
+            # Normalize direction vector
+            direction_x /= distance
+            direction_y /= distance
+            
+            # Calculate movement based on speed and delta time
+            movement = self.speed * delta_time
+            
+            # Move the actor
+            if movement < distance:
+                self.move(direction_x * movement, direction_y * movement)
+
+            else:
+                # Snap to the target if within movement distance
+                self.x = self.target_x
+                self.y = self.target_y
+        else:
+            if self.list_points:
+                # Walk to the next point in the list 
+                next_point = self.list_points.pop(0)
+                self.target_x = next_point[0]
+                self.target_y = next_point[1]
+                
+            else:
+                self.stop()
 
 
     def update(self, dt: float) -> None:
@@ -265,21 +271,25 @@ class Actor(pygame.sprite.Sprite):
             new_target_x: New target x coordinate.
             new_target_y: New target y coordinate.
         """
-        self.target_x = new_target_x
-        self.target_y = new_target_y
+        tmp_list_points: list[tuple[int,int]] = []
 
-        if self.x < new_target_x:
-            self.set_state(ActorState.WALKING_RIGHT)
-        else:
-            self.set_state(ActorState.WALKING_LEFT)
+        tmp_list_points.append((new_target_x, new_target_y))
+        self.walk_path(tmp_list_points, new_target_x, new_target_y)
 
 
     def walk_path(self, list_points: list[tuple[int,int]], new_target_x: int, new_target_y: int) -> None:
         """Actor walks to a point after another, until it reaches the target point."""
-
         self.list_points = list_points
 
-        self.walk_to(new_target_x, new_target_y)
+        if len(self.list_points) > 0:
+            first_point = self.list_points.pop(0)
+            self.target_x = first_point[0]
+            self.target_y = first_point[1]
+
+            if self.x < new_target_x:
+                self.set_state(ActorState.WALKING_RIGHT)
+            else:
+                self.set_state(ActorState.WALKING_LEFT)
 
 
     def stop(self) -> None:
